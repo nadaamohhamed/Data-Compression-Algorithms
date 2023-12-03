@@ -11,47 +11,6 @@ public class RWFiles {
     LZ77 lz77 = new LZ77(this);
     LZW lzw = new LZW(this);
     VectorQuantization v = new VectorQuantization(this);
-
-//    public boolean checkInput(String input){
-//        // default values will be used
-//        if(input == null || input.equals(""))
-//            return true;
-//        else if(input.charAt(0) >= '0' && input.charAt(0) <= '9') {
-//            return true;
-//        }
-//        return false;
-//    }
-//    public void inputQuantization(){
-//        boolean validHeight = false, validWidth = false, validSize = false;
-//        String height = null, width = null, codeBook = null;
-//
-//        while(!validHeight || !validWidth || !validSize){
-//            height = JOptionPane.showInputDialog("Vector Height: ");
-//            width = JOptionPane.showInputDialog("Vector Width: ");
-//            codeBook = JOptionPane.showInputDialog("Codebook Size: ");
-//            validHeight = checkInput(height);
-//            validWidth = checkInput(width);
-//            validSize = checkInput(codeBook);
-//
-//            if(!validHeight || !validWidth || !validSize)
-//                JOptionPane.showMessageDialog(null, "Invalid inputs, please enter numbers only!", "Error",
-//                        JOptionPane.ERROR_MESSAGE);
-//        }
-//        if(height != null && width != null && codeBook != null
-//            && !height.equals("") && !width.equals("") && !codeBook.equals("")) {
-//            v.vectorHeight = Integer.parseInt(height);
-//            v.vectorWidth = Integer.parseInt(width);
-//            v.codeBookSize = Integer.parseInt(codeBook);
-//        }
-//        else{
-//            JOptionPane.showMessageDialog(null, """
-//                            (The default values that'll be used if you didn't enter them all)
-//
-//                                • Vector height: 2  • Vector width: 2  • Codebook size: 64""",
-//                    "Vector Quantization Info",
-//                    JOptionPane.INFORMATION_MESSAGE);
-//        }
-//    }
     public BitSet stringToBitset(String code) {
         // used in compression while writing to file to convert the data into bits
         BitSet bits = new BitSet(code.length());

@@ -15,6 +15,8 @@ public class VectorQuantization extends JFrame{
     public int codeBookSize = 64;
     public File compressFile = null;
     public File decompressFile = null;
+    public int scaledHeight = 0;
+    public int scaledWidth = 0;
     JPanel VQPanel;
     JScrollPane imageScreen;
     JButton compressButton;
@@ -28,39 +30,37 @@ public class VectorQuantization extends JFrame{
     private JButton browseButton2;
     private JTextField filePathDecompress;
     private Main home;
-
     private JLabel image = new JLabel();
     private BufferedImage originalImage;
     private BufferedImage compressedImage;
-    private boolean compressedImgActive = false;
+    private boolean flag = false;
 
-    private void switchImage(boolean True) {
-        if(True)
-        {
-            if(compressedImage == null)
-                return;
+    private void switchImage(boolean change) {
+        if(compressedImage == null || originalImage == null)
+            return;
+
+        if(change) {
             image.setIcon(new ImageIcon(compressedImage));
             image.setHorizontalAlignment(JLabel.CENTER);
             imageScreen.getViewport().add(image);
-            compressedImgActive = true;
+            flag = true;
         }
-        else
-        {
-            if(originalImage == null)
-                return;
+        else {
             image.setIcon(new ImageIcon(originalImage));
             image.setHorizontalAlignment(JLabel.CENTER);
             imageScreen.getViewport().add(image);
-            compressedImgActive = false;
+            flag = false;
         }
-        if(originalImage != null && compressedImage != null)
+
+        if(originalImage != null && compressedImage != null) {
             changeImgButton.setEnabled(true);
+        }
     }
     VectorQuantization(){
         super("CompressifyPro");
         setContentPane(VQPanel);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setIconImage(new ImageIcon("D:\\Java-IntelliJ\\DataCompressionGUI\\icon.png").getImage());
+        setIconImage(new ImageIcon("D:\\Java-IntelliJ\\DataCompressionGUI\\img\\icon.png").getImage());
         setSize(900, 500);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -107,7 +107,7 @@ public class VectorQuantization extends JFrame{
         compressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                 if(compressFile == null){
+                 if(rwFiles.file.equals("")){
                     JOptionPane.showMessageDialog(null, "Error, please choose an image.", "Invalid Compression",
                             JOptionPane.ERROR_MESSAGE);
                 }
@@ -156,7 +156,7 @@ public class VectorQuantization extends JFrame{
         changeImgButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                switchImage(!compressedImgActive);
+                switchImage(!flag);
             }
         });
         browseButton2.addActionListener(new ActionListener() {
@@ -179,11 +179,15 @@ public class VectorQuantization extends JFrame{
             }
         });
     }
+
+    // ------------------------------------------------------------------------------
+
     public VectorQuantization(RWFiles rwFiles) {
         this.rwFiles = rwFiles;
     }
 
     public Vector<Vector<Integer>> divideIntoVectors(int[][] scaledImg, int scaledHeight, int scaledWidth){
+        // divide the image into vectors of specified vector height/width
         Vector<Vector<Integer>> blocks = new Vector<>();
         for (int i = 0; i < scaledHeight; i+= vectorHeight) {
             for (int j = 0; j < scaledWidth; j+= vectorWidth) {
@@ -200,6 +204,7 @@ public class VectorQuantization extends JFrame{
     }
 
     public Vector<Integer> calculateAverage(Vector<Vector<Integer>> Vectors){
+        // calculate average of group of vectors
         int[] sum = new int[Vectors.get(0).size()];
         for (Vector<Integer> vector : Vectors ) {
             for (int i = 0; i < vector.size(); i++) {
@@ -218,7 +223,7 @@ public class VectorQuantization extends JFrame{
         Vector<Integer> v1 = new Vector<>();
         Vector<Integer> v2 = new Vector<>();
         for(int i = 0;i<average.size();i++){
-            // split into 2 vectors
+            // split average into 2 vectors
             v1.add(average.get(i) + 1);
             v2.add(average.get(i) - 1);
         }
@@ -241,8 +246,9 @@ public class VectorQuantization extends JFrame{
                 quantized.add(calculateAverage(Vectors));
             return;
         }
-
+        // calculate average of vectors
         Vector<Integer> avg = calculateAverage(Vectors);
+        // split the average into 2 vectors
         Vector<Vector<Integer>> splitVectors = splitAverage(avg);
 
         Vector<Vector<Integer>> left = new Vector<>();
@@ -251,16 +257,18 @@ public class VectorQuantization extends JFrame{
         for (Vector<Integer> vec: Vectors) {
             int dis1 = calculateDistance(vec, splitVectors.get(0));
             int dis2 = calculateDistance(vec, splitVectors.get(1));
-
+            // add vector to its closest average vector group
             if(dis1 <= dis2)
                 left.add(vec);
             else
                 right.add(vec);
         }
+        // divide variable codebook size/2 and quantize left group, quantize right group
         quantize(codeBookSize/2, left, quantized);
         quantize(codeBookSize/2, right, quantized);
     }
     public Vector<Integer> encodeImage(Vector<Vector<Integer>> Vectors, Vector<Vector<Integer>> quantized) {
+        // get for every vector the index of the closest quantized vector
         Vector<Integer> indices = new Vector<>();
 
         Vector<Integer> sums = new Vector<>();
@@ -284,13 +292,9 @@ public class VectorQuantization extends JFrame{
         }
         return indices;
     }
-    public boolean compress(String file) throws IOException, ClassNotFoundException {
-        // Read image
-        int[][] image = RWImage.readImage(file);
-
-        int height = RWImage.height;
-        int width  = RWImage.width;
-        int scaledHeight, scaledWidth;
+    public int[][] scaleImg(int[][] image){
+        // get the original height and width
+        int height = RWImage.height, width  = RWImage.width, x, y;
 
         // get the scaled height and scaled width
         if(height % vectorHeight == 0)
@@ -303,46 +307,40 @@ public class VectorQuantization extends JFrame{
         else
             scaledWidth = ((width / vectorWidth) + 1) * vectorWidth;
 
-
-        // Scale image
         int[][] scaledImage = new int[scaledHeight][scaledWidth];
-        int x, y;
+
         for (int i = 0; i < scaledHeight; i++) {
             if(i >= height)
                 x = height - 1;
-            else x = i;
+            else
+                x = i;
             for (int j = 0; j < scaledWidth; j++) {
                 if(j >= width)
                     y = width - 1;
-                else y = j;
+                else
+                    y = j;
                 scaledImage[i][j] = image[x][y];
             }
         }
 
+        return scaledImage;
+    }
+    public boolean compress(String file) throws IOException, ClassNotFoundException {
+        // read image
+        int[][] image = RWImage.readImage(file);
+        // Scale image
+        int[][] scaledImage = scaleImg(image);
         // Divide image into Vectors
-        Vector<Vector<Integer>> Vectors = divideIntoVectors(scaledImage,scaledHeight,scaledWidth);
+        Vector<Vector<Integer>> Vectors = divideIntoVectors(scaledImage, scaledHeight, scaledWidth);
         // construct codebooks
         Vector<Vector<Integer>> quantized = new Vector<>();
         quantize(codeBookSize, Vectors, quantized);
         // assign every vector to its nearest codebook by its index
         Vector<Integer> output = encodeImage(Vectors, quantized);
-
-        FileOutputStream fileOutputStream = new FileOutputStream(getCompressedPath(file));
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
-        // Write To Compressed File
-        objectOutputStream.writeObject(width);
-        objectOutputStream.writeObject(height);
-        objectOutputStream.writeObject(scaledWidth);
-        objectOutputStream.writeObject(scaledHeight);
-        objectOutputStream.writeObject(vectorWidth);
-        objectOutputStream.writeObject(vectorHeight);
-        objectOutputStream.writeObject(output);
-        objectOutputStream.writeObject(quantized);
-        objectOutputStream.close();
-
+        // write image data (indices) and overhead (quantized)
+        writeVectorData(output, quantized, file);
+        // decompress to output compressed img
         decompress(getCompressedPath(file));
-
         return true;
     }
     public boolean decompress(String fileName) throws IOException, ClassNotFoundException {
@@ -351,7 +349,7 @@ public class VectorQuantization extends JFrame{
         InputStream buffer = new BufferedInputStream(file);
         ObjectInput input = new ObjectInputStream(buffer);
 
-        // read from filePathDecompress
+        // read from file
         int width = (int) input.readObject();
         int height = (int) input.readObject();
         int scaledWidth = (int) input.readObject();
@@ -361,27 +359,42 @@ public class VectorQuantization extends JFrame{
         Vector<Integer> indices = (Vector<Integer>)input.readObject();
         Vector<Vector<Integer>> quantized = (Vector<Vector<Integer>>) input.readObject();
 
+        // construct the decompressed image
         int[][] newImg = new int[scaledHeight][scaledWidth];
 
-        // ---------------------------------------------
-
         for (int i = 0; i < indices.size(); i++) {
-            int x = i / (scaledWidth / vectorWidth);
-            int y = i % (scaledWidth / vectorWidth);
-            x *= vectorHeight;
-            y *= vectorWidth;
-            int v = 0;
+            int x = i / (scaledWidth / vectorWidth) * vectorHeight;
+            int y = i % (scaledWidth / vectorWidth) * vectorWidth;
+            int z = 0;
             for (int j = x; j < x + vectorHeight; j++) {
                 for (int k = y; k < y + vectorWidth; k++) {
-                    newImg[j][k] = quantized.get(indices.get(i)).get(v++);
+                    newImg[j][k] = quantized.get(indices.get(i)).get(z++);
                 }
             }
         }
 
-        // Write image
+        // write image
         RWImage.writeImage(newImg, width, height, getDecompressedPath(fileName));
 
         return true;
+    }
+    public void writeVectorData(Vector<Integer> output, Vector<Vector<Integer>> quantized, String file){
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(getCompressedPath(file));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            // write to compressed File
+            objectOutputStream.writeObject(RWImage.width);
+            objectOutputStream.writeObject(RWImage.height);
+            objectOutputStream.writeObject(scaledWidth);
+            objectOutputStream.writeObject(scaledHeight);
+            objectOutputStream.writeObject(vectorWidth);
+            objectOutputStream.writeObject(vectorHeight);
+            objectOutputStream.writeObject(output);
+            objectOutputStream.writeObject(quantized);
+            objectOutputStream.close();
+        }
+        catch (IOException ex){
+        }
     }
     public String getCompressedPath(String path) {
         return path.substring(0, path.lastIndexOf('.')) + ".VQ";

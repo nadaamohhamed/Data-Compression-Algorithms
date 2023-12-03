@@ -17,9 +17,6 @@ public class RWImage {
                 for (int y = 0; y < height; y++) {
                     int pixel = img.getRGB(x, y);
                     int red = (pixel & 0x00ff0000) >> 16;
-                    int green = (pixel & 0x0000ff00) >> 8;
-                    int blue = pixel & 0x000000ff;
-                    int alpha = (pixel & 0xff000000) >> 24;
                     imagePixels[y][x] = red;
                 }
             }
@@ -30,18 +27,16 @@ public class RWImage {
     }
 
     public static BufferedImage getBufferedImage(int[][] imagePixels, int width, int height) {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < height; y++) {
-            int s;
-            if(y == 199)
-                s = 13;
-            for (int x = 0; x < width; x++) {
-                int value = -1 << 24;
-                value = 0xff000000 | (imagePixels[y][x] << 16) | (imagePixels[y][x] << 8) | (imagePixels[y][x]);
-                image.setRGB(x, y, value);
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    int rgb = (imagePixels[i][j] << 16) | (imagePixels[i][j] << 8) | imagePixels[i][j];
+                    image.setRGB(j, i, rgb);
+                }
             }
-        }
-        return image;
+            return image;
+
     }
 
     public static void writeImage(int[][] imagePixels, int width, int height, String outPath) {

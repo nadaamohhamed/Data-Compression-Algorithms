@@ -22,7 +22,7 @@ public class Main extends JFrame {
         super("CompressifyPro");
         setContentPane(Main);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setIconImage(new ImageIcon("D:\\Java-IntelliJ\\DataCompressionGUI\\icon.png").getImage());
+        setIconImage(new ImageIcon("D:\\Java-IntelliJ\\DataCompressionGUI\\img\\icon.png").getImage());
         setSize(900, 500);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -95,8 +95,12 @@ public class Main extends JFrame {
                 if (!algorithm.equals("")) {
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setAcceptAllFileFilterUsed(false);
-                    fileChooser.setFileFilter( new FileNameExtensionFilter(
+                    if(algorithm.equals("Standard-Huffman"))
+                        fileChooser.setFileFilter( new FileNameExtensionFilter(
                                 ".txt, .bin files", "txt", "bin"));
+                    else
+                        fileChooser.setFileFilter( new FileNameExtensionFilter(
+                                ".txt files", "txt"));
                     int returnValue = fileChooser.showOpenDialog(Main);
                     if (returnValue == JFileChooser.APPROVE_OPTION) {
                         File f = fileChooser.getSelectedFile();

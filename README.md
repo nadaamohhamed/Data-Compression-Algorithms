@@ -14,8 +14,8 @@ This repository contains the implementation of an application (_**CompressifyPro
 - **_Java Swing_**: a lightweight Java graphical user interface (GUI) widget toolkit that includes a rich set of widgets.
 ## Preview
 - Main Screen
-<img src="/Screenshots/main.png" alt="Alt text" title="Main Screen">
-<img src="/Screenshots/options.png" alt="Alt text" title="Options">
+<img src="/img/main.png" alt="Alt text" title="Main Screen">
+<img src="/img/options.png" alt="Alt text" title="Options">
 
 - Vector Quantization Screen
-<img src="/Screenshots/vector.png" alt="Alt text" title="Vector Quantization Screen">
+<img src="/img/vector.png" alt="Alt text" title="Vector Quantization Screen">
