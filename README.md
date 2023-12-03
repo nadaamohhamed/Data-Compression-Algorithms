@@ -1,5 +1,5 @@
 # Data Compression Algorithms
-## Features
+## Description
 This repository contains the implementation of an application (_**CompressifyPro**_) that contains the following data compression algorithms: 
 #### Lossless:
 - Standard-Huffman Coding
@@ -7,8 +7,8 @@ This repository contains the implementation of an application (_**CompressifyPro
 - LZW
 #### Lossy:
 - Vector Quantization
-## How to run
-- Download the source code from the repository and run the Main.java file
+## Features
+- This application takes a text file or an image as an input and compresses/decompresses it using one of the above algorithms.
 ## Tools used
 - **_IntelliJ IDEA_**: an integrated development environment (IDE) for developing software written in Java and other languages.
 - **_Java Swing_**: a lightweight Java graphical user interface (GUI) widget toolkit that includes a rich set of widgets.
