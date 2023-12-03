@@ -1,4 +1,5 @@
 public class HuffmanNode implements Comparable<HuffmanNode> {
+
     private HuffmanNode leftNode;
     private HuffmanNode rightNode;
     protected Integer frequency;

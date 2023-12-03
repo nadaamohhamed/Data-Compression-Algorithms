@@ -1,4 +1,5 @@
 public class Leaf extends HuffmanNode{
+
     private char character;
     public Leaf(char character, Integer frequency){
         super(null, null);

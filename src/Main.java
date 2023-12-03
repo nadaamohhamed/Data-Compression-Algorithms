@@ -27,15 +27,13 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         comboBox.setSelectedItem(null);
+
         fileRW = new RWFiles();
+
         compressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(algorithm.equals("")){
-                    JOptionPane.showMessageDialog(null, "Error, please choose an algorithm.", "Invalid Compression",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else if(fileRW.file.equals("")){
+                if(fileRW.file.equals("")){
                     JOptionPane.showMessageDialog(null, "Error, please choose a file.", "Invalid Compression",
                             JOptionPane.ERROR_MESSAGE);
                 }
@@ -55,11 +53,7 @@ public class Main extends JFrame {
         decompressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (algorithm.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Error, please choose an algorithm.", "Invalid Decompression",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else if(fileRW.file.equals("")){
+                if(fileRW.file.equals("")){
                     JOptionPane.showMessageDialog(null, "Error, please choose a file.", "Invalid Decompression",
                             JOptionPane.ERROR_MESSAGE);
                 }
@@ -120,5 +114,4 @@ public class Main extends JFrame {
     public static void main(String[] args) {
         new Main();
     }
-
 }

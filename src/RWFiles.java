@@ -6,11 +6,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.BitSet;
 
 public class RWFiles {
+
     String file = "";
     StandardHuffman huffman = new StandardHuffman(this);
     LZ77 lz77 = new LZ77(this);
     LZW lzw = new LZW(this);
     VectorQuantization v = new VectorQuantization(this);
+
     public BitSet stringToBitset(String code) {
         // used in compression while writing to file to convert the data into bits
         BitSet bits = new BitSet(code.length());
@@ -48,7 +50,6 @@ public class RWFiles {
             Files.write(filePath, dataBytes, StandardOpenOption.APPEND);
         }
         catch (IOException e) {
-//            e.printStackTrace();
         }
     }
 
@@ -61,7 +62,7 @@ public class RWFiles {
             default -> false;
         };
 
-        if(read && file != ""){
+        if(read){
             JOptionPane.showMessageDialog(null, "Done Successfully!", "File Compressed",
                     JOptionPane.INFORMATION_MESSAGE);
         }
@@ -82,7 +83,7 @@ public class RWFiles {
             default -> false;
         };
 
-        if(read && file != ""){
+        if(read){
             JOptionPane.showMessageDialog(null, "Done Successfully!", "File Decompressed",
                     JOptionPane.INFORMATION_MESSAGE);
         }

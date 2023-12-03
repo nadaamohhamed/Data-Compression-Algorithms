@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class LZ77 {
+
     RWFiles rwFiles;
 
     public LZ77(RWFiles rwFiles) {

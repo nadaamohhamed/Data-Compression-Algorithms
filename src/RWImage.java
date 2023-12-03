@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class RWImage {
+
     public static int height;
     public static int width;
     public static int[][] readImage(String path) {
@@ -36,7 +37,6 @@ public class RWImage {
                 }
             }
             return image;
-
     }
 
     public static void writeImage(int[][] imagePixels, int width, int height, String outPath) {

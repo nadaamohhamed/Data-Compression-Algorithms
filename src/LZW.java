@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class LZW {
+
     RWFiles rwFiles;
     private HashMap<String, Integer> dictionary1;
     private HashMap<Integer, String> dictionary2;

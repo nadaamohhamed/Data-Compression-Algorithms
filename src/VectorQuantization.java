@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Vector;
 
 public class VectorQuantization extends JFrame{
+
     public RWFiles rwFiles;
     public int vectorHeight = 2;
     public int vectorWidth = 2;

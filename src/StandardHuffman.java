@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class StandardHuffman {
+
     RWFiles rwFiles;
     HashMap<Character, Integer> frequency = new HashMap<>();
     HashMap<Character, String> huffmanCodes = new HashMap<>();
