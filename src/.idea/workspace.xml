@@ -1,92 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1e2a5c7e-c469-4d15-a568-9a4e49deebdc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/libraries/groovy_4_0_14.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../DataCompressionGUI.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../file.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../image.VQ" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../image.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../image_compressed.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-ant-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-ant-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-astbuilder-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-astbuilder-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-cli-commons-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-cli-commons-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-cli-picocli-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-cli-picocli-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-console-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-console-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-contracts-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-contracts-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-datetime-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-datetime-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-dateutil-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-dateutil-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-docgenerator-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-docgenerator-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-ginq-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-ginq-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-groovydoc-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-groovydoc-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-groovysh-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-groovysh-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-jmx-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-jmx-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-json-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-json-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-jsr223-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-jsr223-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-macro-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-macro-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-macro-library-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-macro-library-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-nio-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-nio-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-servlet-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-servlet-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-sql-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-sql-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-swing-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-swing-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-templates-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-templates-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-test-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-test-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-test-junit5-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-test-junit5-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-testng-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-testng-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-toml-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-toml-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-typecheckers-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-typecheckers-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-xml-4.0.14-sources.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lib/groovy-xml-4.0.14.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lorem.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HuffmanNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LZ77.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LZW.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Leaf.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Main.form" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RWFiles.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RWImage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/StandardHuffman.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VQ.form" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VectorQuantization.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../test.jpg" afterDir="false" />
-    </list>
+    <list default="true" id="1e2a5c7e-c469-4d15-a568-9a4e49deebdc" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -99,7 +14,13 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-   
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "D:/Java-IntelliJ/DataCompressionGUI"
+  }
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
