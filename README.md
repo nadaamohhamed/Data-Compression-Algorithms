@@ -16,5 +16,6 @@ This repository contains the implementation of an application (_**CompressifyPro
 - Main Screen
 <img src="/Screenshots/main.png" alt="Alt text" title="Main Screen">
 <img src="/Screenshots/options.png" alt="Alt text" title="Options">
+
 - Vector Quantization Screen
 <img src="/Screenshots/vector.png" alt="Alt text" title="Vector Quantization Screen">
