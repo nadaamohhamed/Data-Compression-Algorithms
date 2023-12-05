@@ -32,12 +32,12 @@ public class VectorQuantization extends JFrame{
     private JTextField filePathDecompress;
     private Main home;
     private JLabel image = new JLabel();
-    private BufferedImage originalImage;
+    private BufferedImage Image;
     private BufferedImage compressedImage;
     private boolean flag = false;
 
     private void switchImage(boolean change) {
-        if(compressedImage == null || originalImage == null)
+        if(compressedImage == null || Image == null)
             return;
 
         if(change) {
@@ -47,13 +47,13 @@ public class VectorQuantization extends JFrame{
             flag = true;
         }
         else {
-            image.setIcon(new ImageIcon(originalImage));
+            image.setIcon(new ImageIcon(Image));
             image.setHorizontalAlignment(JLabel.CENTER);
             imageScreen.getViewport().add(image);
             flag = false;
         }
 
-        if(originalImage != null && compressedImage != null) {
+        if(Image != null && compressedImage != null) {
             changeImgButton.setEnabled(true);
         }
     }
@@ -94,7 +94,7 @@ public class VectorQuantization extends JFrame{
                     filePathCompress.setText(compressFile.getAbsolutePath());
                     filePathDecompress.setText("");
                     try {
-                        originalImage = ImageIO.read(new File(compressFile.getAbsolutePath()));
+                        Image = ImageIO.read(new File(compressFile.getAbsolutePath()));
                         switchImage(false);
                         changeImgButton.setEnabled(false);
                     } catch (IOException e1) {
@@ -166,7 +166,7 @@ public class VectorQuantization extends JFrame{
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 fileChooser.setFileFilter( new FileNameExtensionFilter(
-                        ".VQ files",  "VQ"));
+                        ".bin files",  "bin"));
                 int returnValue = fileChooser.showOpenDialog(VQPanel);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File f = fileChooser.getSelectedFile();
@@ -187,75 +187,97 @@ public class VectorQuantization extends JFrame{
         this.rwFiles = rwFiles;
     }
 
-    public Vector<Vector<Integer>> divideIntoVectors(int[][] scaledImg, int scaledHeight, int scaledWidth){
+    public Vector<int[][][]> divideIntoVectors(int[][][] scaledImg, int scaledHeight, int scaledWidth){
         // divide the image into vectors of specified vector height/width
-        Vector<Vector<Integer>> blocks = new Vector<>();
+        Vector<int[][][]> blocks = new Vector<>();
         for (int i = 0; i < scaledHeight; i+= vectorHeight) {
             for (int j = 0; j < scaledWidth; j+= vectorWidth) {
-                Vector<Integer> tmp = new Vector<>();
-                for (int x = i; x < i + vectorHeight; x++) {
-                    for (int y = j; y < j + vectorWidth; y++) {
-                        tmp.add(scaledImg[x][y]);
+                blocks.add(new int[vectorHeight][vectorWidth][4]);
+                for (int x = i, a = 0; x < i + vectorHeight; x++, a++) {
+                    for (int y = j, b = 0; y < j + vectorWidth; y++, b++) {
+                        blocks.lastElement()[a][b] = scaledImg[x][y];
                     }
                 }
-                blocks.add(tmp);
             }
         }
         return blocks;
     }
 
-    public Vector<Integer> calculateAverage(Vector<Vector<Integer>> Vectors){
+    public int[][][] calculateAverage(Vector<int[][][]> vectors){
+        int height = vectors.get(0).length;
+        int width = vectors.get(0)[0].length;
+
+        int[][][] sum = new int[height][width][4];
         // calculate average of group of vectors
-        int[] sum = new int[Vectors.get(0).size()];
-        for (Vector<Integer> vector : Vectors ) {
-            for (int i = 0; i < vector.size(); i++) {
-                sum[i] += vector.get(i);
+        for (int[][][] vector : vectors) {
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < 4; k++) {
+                        sum[i][j][k] += vector[i][j][k];
+                    }
+                }
             }
         }
-        Vector<Integer> avg = new Vector<>();
-        for (int i = 0; i < sum.length; i++) {
-            avg.add(sum[i] / Vectors.size());
+        int[][][] avg = new int[height][width][4];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                for (int k = 0; k < 4; k++) {
+                    avg[i][j][k] = sum[i][j][k] / vectors.size();
+                }
+            }
         }
         return avg;
     }
-    public Vector<Vector<Integer>> splitAverage(Vector<Integer> average){
-        Vector<Vector<Integer>> returnVec = new Vector<>();
+    public Vector<int[][][]> splitAverage(int[][][] average){
+        Vector<int[][][]> returnVec = new Vector<>();
 
-        Vector<Integer> v1 = new Vector<>();
-        Vector<Integer> v2 = new Vector<>();
-        for(int i = 0;i<average.size();i++){
-            // split average into 2 vectors
-            v1.add(average.get(i) + 1);
-            v2.add(average.get(i) - 1);
+        int height = average.length;
+        int width = average[0].length;
+
+        int[][][] average1 = new int[height][width][4];
+        int[][][] average2 = new int[height][width][4];
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                for(int k = 0 ; k < 4 ; k++){
+                    average1[i][j][k] = average[i][j][k] + 1;
+                    average2[i][j][k] = average[i][j][k] - 1;
+                }
+            }
         }
-        returnVec.add(v1);
-        returnVec.add(v2);
+
+        returnVec.add(average1);
+        returnVec.add(average2);
 
         return returnVec;
     }
-    public int calculateDistance(Vector<Integer> vec1, Vector<Integer> vec2){
+    public int calculateDistance(int[][][] block1, int[][][] block2){
         int sum = 0;
-        // calculate the euclidean distance between 2 vectors
-        for(int i = 0;i<vec1.size();i++) {
-            sum += (int) Math.pow(vec1.get(i) - vec2.get(i), 2);
+        // calculate the euclidean distance between 2 blocks
+        for (int i = 0; i < block1.length; i++) {
+            for (int j = 0; j < block1[i].length; j++) {
+                for (int k = 0; k < block1[i][j].length; k++) {
+                    sum += (int) Math.pow(block1[i][j][k] - block2[i][j][k], 2);
+                }
+            }
         }
         return sum;
     }
-    public void quantize(int codeBookSize,  Vector<Vector<Integer>> Vectors, Vector<Vector<Integer>> quantized){
-        if(codeBookSize == 1 || Vectors.size() == 0){
-            if(Vectors.size() > 0)
-                quantized.add(calculateAverage(Vectors));
+    public void quantize(int codeBookSize,  Vector<int[][][]> vectors, Vector<int[][][]> quantized){
+        if(codeBookSize == 1 || vectors.size() == 0){
+            if(vectors.size() > 0)
+                quantized.add(calculateAverage(vectors));
             return;
         }
         // calculate average of vectors
-        Vector<Integer> avg = calculateAverage(Vectors);
+        int[][][] avg = calculateAverage(vectors);
         // split the average into 2 vectors
-        Vector<Vector<Integer>> splitVectors = splitAverage(avg);
+        Vector<int[][][]> splitVectors = splitAverage(avg);
 
-        Vector<Vector<Integer>> left = new Vector<>();
-        Vector<Vector<Integer>> right =  new Vector<>();
+        Vector<int[][][]> left = new Vector<>();
+        Vector<int[][][]> right =  new Vector<>();
 
-        for (Vector<Integer> vec: Vectors) {
+        for (int[][][] vec: vectors) {
             int dis1 = calculateDistance(vec, splitVectors.get(0));
             int dis2 = calculateDistance(vec, splitVectors.get(1));
             // add vector to its closest average vector group
@@ -268,19 +290,18 @@ public class VectorQuantization extends JFrame{
         quantize(codeBookSize/2, left, quantized);
         quantize(codeBookSize/2, right, quantized);
     }
-    public Vector<Integer> encodeImage(Vector<Vector<Integer>> Vectors, Vector<Vector<Integer>> quantized) {
+    public Vector<Integer> encodeImage(Vector<int[][][]> vectors, Vector<int[][][]> quantized) {
         // get for every vector the index of the closest quantized vector
         Vector<Integer> indices = new Vector<>();
 
         Vector<Integer> sums = new Vector<>();
         Vector<Integer> sortedSums = new Vector<>();
-
-        for (Vector<Integer> vec : Vectors) {
+        for (int[][][] vec : vectors) {
             for (int i = 0; i < quantized.size(); i++) {
                 // calculate the distance between it and each quantized vector
-               int distance = calculateDistance(vec, quantized.get(i));
-               sums.add(distance);
-               sortedSums.add(distance);
+                int distance = calculateDistance(vec, quantized.get(i));
+                sums.add(distance);
+                sortedSums.add(distance);
             }
             // sort the distance
             Collections.sort(sortedSums);
@@ -293,22 +314,16 @@ public class VectorQuantization extends JFrame{
         }
         return indices;
     }
-    public int[][] scaleImg(int[][] image){
+    public int[][][] scaleImg(int[][][] image){
         // get the original height and width
         int height = RWImage.height, width  = RWImage.width, x, y;
 
         // get the scaled height and scaled width
-        if(height % vectorHeight == 0)
-            scaledHeight = height;
-        else
-            scaledHeight = ((height / vectorHeight) + 1) * vectorHeight;
+        scaledHeight = height % vectorHeight == 0 ? height : ((height / vectorHeight) + 1) * vectorHeight;
+        scaledWidth = width % vectorWidth == 0? width : ((width / vectorWidth) + 1) * vectorWidth;
 
-        if(width % vectorWidth == 0)
-            scaledWidth = width;
-        else
-            scaledWidth = ((width / vectorWidth) + 1) * vectorWidth;
-
-        int[][] scaledImage = new int[scaledHeight][scaledWidth];
+        // copy last pixel if the scaled height or width was less than original height, width
+        int[][][] scaledImage = new int[scaledHeight][scaledWidth][4];
 
         for (int i = 0; i < scaledHeight; i++) {
             if(i >= height)
@@ -326,15 +341,15 @@ public class VectorQuantization extends JFrame{
 
         return scaledImage;
     }
-    public boolean compress(String file) throws IOException, ClassNotFoundException {
+    public boolean compress(String file) {
         // read image
-        int[][] image = RWImage.readImage(file);
+        int[][][] image = RWImage.readImage(file);
         // Scale image
-        int[][] scaledImage = scaleImg(image);
+        int[][][] scaledImage = scaleImg(image);
         // Divide image into Vectors
-        Vector<Vector<Integer>> Vectors = divideIntoVectors(scaledImage, scaledHeight, scaledWidth);
+        Vector<int[][][]> Vectors = divideIntoVectors(scaledImage, scaledHeight, scaledWidth);
         // construct codebooks
-        Vector<Vector<Integer>> quantized = new Vector<>();
+        Vector<int[][][]> quantized = new Vector<>();
         quantize(codeBookSize, Vectors, quantized);
         // assign every vector to its nearest codebook by its index
         Vector<Integer> output = encodeImage(Vectors, quantized);
@@ -344,42 +359,48 @@ public class VectorQuantization extends JFrame{
         decompress(getCompressedPath(file));
         return true;
     }
-    public boolean decompress(String fileName) throws IOException, ClassNotFoundException {
+    public boolean decompress(String fileName)  {
 
-        InputStream file = new FileInputStream(fileName);
-        InputStream buffer = new BufferedInputStream(file);
-        ObjectInput input = new ObjectInputStream(buffer);
+        try (InputStream file = new FileInputStream(fileName);
+             InputStream buffer = new BufferedInputStream(file);
+             ObjectInput input = new ObjectInputStream(buffer)) {
 
-        // read from file
-        int width = (int) input.readObject();
-        int height = (int) input.readObject();
-        int scaledWidth = (int) input.readObject();
-        int scaledHeight = (int) input.readObject();
-        int vectorWidth = (int) input.readObject();
-        int vectorHeight = (int) input.readObject();
-        Vector<Integer> indices = (Vector<Integer>)input.readObject();
-        Vector<Vector<Integer>> quantized = (Vector<Vector<Integer>>) input.readObject();
+            // read from file
+            int width = (int) input.readObject();
+            int height = (int) input.readObject();
+            int scaledWidth = (int) input.readObject();
+            int scaledHeight = (int) input.readObject();
+            int vectorWidth = (int) input.readObject();
+            int vectorHeight = (int) input.readObject();
+            Vector<Integer> indices = (Vector<Integer>) input.readObject();
+            Vector<int[][][]> quantized = (Vector<int[][][]>) input.readObject();
 
-        // construct the decompressed image
-        int[][] newImg = new int[scaledHeight][scaledWidth];
+            // construct the decompressed image
+            int[][][] newImg = new int[scaledHeight][scaledWidth][4];
 
-        for (int i = 0; i < indices.size(); i++) {
-            int x = i / (scaledWidth / vectorWidth) * vectorHeight;
-            int y = i % (scaledWidth / vectorWidth) * vectorWidth;
-            int z = 0;
-            for (int j = x; j < x + vectorHeight; j++) {
-                for (int k = y; k < y + vectorWidth; k++) {
-                    newImg[j][k] = quantized.get(indices.get(i)).get(z++);
+            for (int i = 0; i < indices.size(); i++) {
+                int x = i / (scaledWidth / vectorWidth) * vectorHeight;
+                int y = i % (scaledWidth / vectorWidth) * vectorWidth;
+                int[][][] arr = quantized.get(indices.get(i));
+                for (int j = x, a = 0; j < x + vectorHeight; j++, a++) {
+                    for (int k = y, b = 0; k < y + vectorWidth; k++, b++) {
+                        for (int z = 0; z < 4; z++) {
+                            newImg[j][k][z] = arr[a][b][z];
+                        }
+                    }
                 }
             }
+
+            // write image
+            RWImage.writeImage(newImg, width, height, getDecompressedPath(fileName));
+
+            return true;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
         }
-
-        // write image
-        RWImage.writeImage(newImg, width, height, getDecompressedPath(fileName));
-
-        return true;
     }
-    public void writeVectorData(Vector<Integer> output, Vector<Vector<Integer>> quantized, String file){
+    public void writeVectorData(Vector<Integer> output, Vector<int[][][]> quantized, String file){
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(getCompressedPath(file));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
@@ -398,7 +419,7 @@ public class VectorQuantization extends JFrame{
         }
     }
     public String getCompressedPath(String path) {
-        return path.substring(0, path.lastIndexOf('.')) + ".VQ";
+        return path.substring(0, path.lastIndexOf('.')) + ".bin";
     }
     public String getDecompressedPath(String path)    {
         return path.substring(0,path.lastIndexOf('.')) + "_compressed.jpg";
