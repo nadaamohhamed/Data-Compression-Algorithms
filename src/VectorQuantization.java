@@ -67,6 +67,8 @@ public class VectorQuantization extends JFrame{
         setVisible(true);
         rwFiles = new RWFiles();
 
+        File workingDirectory = new File(System.getProperty("user.dir"));
+
         SpinnerModel value = new SpinnerNumberModel(2, 2, 1000000, 1);
         SpinnerModel value2 = new SpinnerNumberModel(64, 1, 1024, 1);
         vSize.setModel(value);
@@ -86,6 +88,7 @@ public class VectorQuantization extends JFrame{
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 fileChooser.setFileFilter( new FileNameExtensionFilter(
                         "All Images",  ImageIO.getReaderFileSuffixes()));
+                fileChooser.setCurrentDirectory(workingDirectory);
                 int returnValue = fileChooser.showOpenDialog(VQPanel);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File f = fileChooser.getSelectedFile();
@@ -167,6 +170,7 @@ public class VectorQuantization extends JFrame{
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 fileChooser.setFileFilter( new FileNameExtensionFilter(
                         ".bin files",  "bin"));
+                fileChooser.setCurrentDirectory(workingDirectory);
                 int returnValue = fileChooser.showOpenDialog(VQPanel);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File f = fileChooser.getSelectedFile();

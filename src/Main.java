@@ -29,6 +29,7 @@ public class Main extends JFrame {
         comboBox.setSelectedItem(null);
 
         fileRW = new RWFiles();
+        File workingDirectory = new File(System.getProperty("user.dir"));
 
         compressButton.addActionListener(new ActionListener() {
             @Override
@@ -95,6 +96,7 @@ public class Main extends JFrame {
                     else
                         fileChooser.setFileFilter( new FileNameExtensionFilter(
                                 ".txt files", "txt"));
+                    fileChooser.setCurrentDirectory(workingDirectory);
                     int returnValue = fileChooser.showOpenDialog(Main);
                     if (returnValue == JFileChooser.APPROVE_OPTION) {
                         File f = fileChooser.getSelectedFile();
