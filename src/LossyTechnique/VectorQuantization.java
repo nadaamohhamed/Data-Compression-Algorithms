@@ -172,6 +172,7 @@ public class VectorQuantization extends CompressionTechniqueHandler {
 
         return scaledImage;
     }
+    @Override
     public void compress(String file) {
         // read image
         int[][][] image = imageHandler.readImageRGB(file);
@@ -189,6 +190,7 @@ public class VectorQuantization extends CompressionTechniqueHandler {
         // decompress to output compressed img
         decompress(getCompressedPath(file));
     }
+    @Override
     public void decompress(String fileName)  {
 
         try (InputStream file = new FileInputStream(fileName);

@@ -3,8 +3,8 @@
 This repository contains the implementation of an application (_**CompressifyPro**_) that contains the following data compression algorithms: 
 #### LosslessTechnique:
 - Standard-Huffman Coding
-- LosslessTechnique.LZ77
-- LosslessTechnique.LZW
+- LZ77
+- LZW
 #### LossyTechnique:
 - Vector Quantization
 - 2D Predictive Coding

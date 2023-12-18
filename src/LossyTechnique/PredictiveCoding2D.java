@@ -71,6 +71,7 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
             }
         }
     }
+    @Override
     public void compress(String file) {
         // read image
         int[][][] image = imageHandler.readImageRGB(file);
@@ -109,6 +110,7 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
         }
         return new AbstractMap.SimpleEntry<Integer , Integer>(max, min);
     }
+    @Override
     public void decompress(String fileName)  {
 
         try (InputStream file = new FileInputStream(fileName);
