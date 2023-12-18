@@ -1,194 +1,21 @@
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+package LossyTechnique;
+
+import Handlers.CompressionTechniqueHandler;
+import Handlers.ImageHandler;
+
 import java.io.*;
 import java.util.Collections;
 import java.util.Vector;
 
-public class VectorQuantization extends JFrame{
-
-    public RWFiles rwFiles;
+public class VectorQuantization extends CompressionTechniqueHandler {
     public int vectorHeight = 2;
     public int vectorWidth = 2;
     public int codeBookSize = 64;
-    public File compressFile = null;
-    public File decompressFile = null;
     public int scaledHeight = 0;
     public int scaledWidth = 0;
-    JPanel VQPanel;
-    JScrollPane imageScreen;
-    JButton compressButton;
-    JButton decompressButton;
-    JButton browseButton;
-    JTextField filePathCompress;
-    private JButton changeImgButton;
-    private JButton returnButton;
-    private JSpinner vSize;
-    private JSpinner CBSize;
-    private JButton browseButton2;
-    private JTextField filePathDecompress;
-    private Main home;
-    private JLabel image = new JLabel();
-    private BufferedImage Image;
-    private BufferedImage compressedImage;
-    private boolean flag = false;
 
-    private void switchImage(boolean change) {
-        if(compressedImage == null || Image == null)
-            return;
-
-        if(change) {
-            image.setIcon(new ImageIcon(compressedImage));
-            image.setHorizontalAlignment(JLabel.CENTER);
-            imageScreen.getViewport().add(image);
-            flag = true;
-        }
-        else {
-            image.setIcon(new ImageIcon(Image));
-            image.setHorizontalAlignment(JLabel.CENTER);
-            imageScreen.getViewport().add(image);
-            flag = false;
-        }
-
-        if(Image != null && compressedImage != null) {
-            changeImgButton.setEnabled(true);
-        }
-    }
-    VectorQuantization(){
-        super("CompressifyPro");
-        setContentPane(VQPanel);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setIconImage(new ImageIcon("D:\\Java-IntelliJ\\DataCompressionGUI\\img\\icon.png").getImage());
-        setSize(900, 500);
-        setLocationRelativeTo(null);
-        setVisible(true);
-        rwFiles = new RWFiles();
-
-        File workingDirectory = new File(System.getProperty("user.dir"));
-
-        SpinnerModel value = new SpinnerNumberModel(2, 2, 1000000, 1);
-        SpinnerModel value2 = new SpinnerNumberModel(64, 1, 1024, 1);
-        vSize.setModel(value);
-        CBSize.setModel(value2);
-        changeImgButton.setEnabled(false);
-        returnButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                home = new Main();
-            }
-        });
-        browseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.setFileFilter( new FileNameExtensionFilter(
-                        "All Images",  ImageIO.getReaderFileSuffixes()));
-                fileChooser.setCurrentDirectory(workingDirectory);
-                int returnValue = fileChooser.showOpenDialog(VQPanel);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File f = fileChooser.getSelectedFile();
-                    rwFiles.file = f.getAbsolutePath();
-                    compressFile = fileChooser.getSelectedFile();
-                    filePathCompress.setText(compressFile.getAbsolutePath());
-                    filePathDecompress.setText("");
-                    try {
-                        Image = ImageIO.read(new File(compressFile.getAbsolutePath()));
-                        switchImage(false);
-                        changeImgButton.setEnabled(false);
-                    } catch (IOException e1) {
-                    }
-                }
-
-                compressButton.setEnabled(true);
-                decompressButton.setEnabled(false);
-            }
-        });
-        compressButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 if(rwFiles.file.equals("")){
-                    JOptionPane.showMessageDialog(null, "Error, please choose an image.", "Invalid Compression",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else {
-                    try {
-                        vectorHeight = (int) vSize.getValue();
-                        vectorWidth = (int) vSize.getValue();
-                        codeBookSize = (int) CBSize.getValue();
-
-                        String path = compressFile.getAbsolutePath();
-                        rwFiles.compressFile("Vector Quantization");
-                        compressedImage = ImageIO.read(new File(getDecompressedPath(path)));
-                        switchImage(true);
-                    }
-                    catch (IOException | ClassNotFoundException ex) {
-                    }
-                     compressButton.setEnabled(true);
-                     decompressButton.setEnabled(true);
-                     filePathCompress.setText("");
-                }
-            }
-        });
-        decompressButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(rwFiles.file.equals("")){
-                    JOptionPane.showMessageDialog(null, "Error, please choose an image.", "Invalid Decompression",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else {
-                    try {
-                        String path = decompressFile.getAbsolutePath();
-                        rwFiles.decompressFile("Vector Quantization");
-                        compressedImage = ImageIO.read(new File(getDecompressedPath(path)));
-                        switchImage(true);
-                    }
-                    catch (IOException | ClassNotFoundException ex) {
-                    }
-                    compressButton.setEnabled(true);
-                    decompressButton.setEnabled(true);
-                    changeImgButton.setEnabled(false);
-                    filePathDecompress.setText("");
-                }
-            }
-        });
-        changeImgButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchImage(!flag);
-            }
-        });
-        browseButton2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.setFileFilter( new FileNameExtensionFilter(
-                        ".bin files",  "bin"));
-                fileChooser.setCurrentDirectory(workingDirectory);
-                int returnValue = fileChooser.showOpenDialog(VQPanel);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File f = fileChooser.getSelectedFile();
-                    rwFiles.file = f.getAbsolutePath();
-                    decompressFile = fileChooser.getSelectedFile();
-                    filePathDecompress.setText(rwFiles.file);
-                    filePathCompress.setText("");
-                }
-                decompressButton.setEnabled(true);
-                compressButton.setEnabled(false);
-            }
-        });
-    }
-
-    // ------------------------------------------------------------------------------
-
-    public VectorQuantization(RWFiles rwFiles) {
-        this.rwFiles = rwFiles;
+    public VectorQuantization(ImageHandler imageHandler) {
+        super(imageHandler);
     }
 
     public Vector<int[][][]> divideIntoVectors(int[][][] scaledImg, int scaledHeight, int scaledWidth){
@@ -320,7 +147,7 @@ public class VectorQuantization extends JFrame{
     }
     public int[][][] scaleImg(int[][][] image){
         // get the original height and width
-        int height = RWImage.height, width  = RWImage.width, x, y;
+        int height = ImageHandler.height, width  = ImageHandler.width, x, y;
 
         // get the scaled height and scaled width
         scaledHeight = height % vectorHeight == 0 ? height : ((height / vectorHeight) + 1) * vectorHeight;
@@ -345,9 +172,9 @@ public class VectorQuantization extends JFrame{
 
         return scaledImage;
     }
-    public boolean compress(String file) {
+    public void compress(String file) {
         // read image
-        int[][][] image = RWImage.readImage(file);
+        int[][][] image = imageHandler.readImageRGB(file);
         // Scale image
         int[][][] scaledImage = scaleImg(image);
         // Divide image into Vectors
@@ -358,12 +185,11 @@ public class VectorQuantization extends JFrame{
         // assign every vector to its nearest codebook by its index
         Vector<Integer> output = encodeImage(Vectors, quantized);
         // write image data (indices) and overhead (quantized)
-        writeVectorData(output, quantized, file);
+        writeToFile(output, quantized, file);
         // decompress to output compressed img
         decompress(getCompressedPath(file));
-        return true;
     }
-    public boolean decompress(String fileName)  {
+    public void decompress(String fileName)  {
 
         try (InputStream file = new FileInputStream(fileName);
              InputStream buffer = new BufferedInputStream(file);
@@ -396,21 +222,19 @@ public class VectorQuantization extends JFrame{
             }
 
             // write image
-            RWImage.writeImage(newImg, width, height, getDecompressedPath(fileName));
+            imageHandler.writeImageRGB(newImg, width, height, getDecompressedPath(fileName));
 
-            return true;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            return false;
         }
     }
-    public void writeVectorData(Vector<Integer> output, Vector<int[][][]> quantized, String file){
+    public void writeToFile(Vector<Integer> output, Vector<int[][][]> quantized, String file){
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(getCompressedPath(file));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             // write to compressed File
-            objectOutputStream.writeObject(RWImage.width);
-            objectOutputStream.writeObject(RWImage.height);
+            objectOutputStream.writeObject(imageHandler.width);
+            objectOutputStream.writeObject(imageHandler.height);
             objectOutputStream.writeObject(scaledWidth);
             objectOutputStream.writeObject(scaledHeight);
             objectOutputStream.writeObject(vectorWidth);
@@ -428,4 +252,5 @@ public class VectorQuantization extends JFrame{
     public String getDecompressedPath(String path)    {
         return path.substring(0,path.lastIndexOf('.')) + "_compressed.jpg";
     }
+
 }

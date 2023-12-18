@@ -1,18 +1,15 @@
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+package LosslessTechnique;
 
-public class LZ77 {
+import Handlers.CompressionTechniqueHandler;
+import Handlers.FileHandler;
 
-    RWFiles rwFiles;
+public class LZ77 extends CompressionTechniqueHandler {
 
-    public LZ77(RWFiles rwFiles) {
-        this.rwFiles = rwFiles;
+    public LZ77(FileHandler fileHandler) {
+        super(fileHandler);
     }
-
-    public String compress(String input){
+    @Override
+    public void compress(String input){
         String searchWindow = "";
         int tagLength, pos, index;
         String compressed = "";
@@ -76,12 +73,12 @@ public class LZ77 {
             }
             compressed += tag;
         }
-        return compressed;
+        fileHandler.setFileContent(compressed);
     }
-
-    public String decompress(String input){
+    @Override
+    public void decompress(String input){
         int pos, len;
-        String  next, currWindow = "";
+        String  next, decompressed = "";
 
         if(!input.equals("")) {
             String[] tags = input.split(">");
@@ -96,49 +93,16 @@ public class LZ77 {
                 next = attributes[2];
 
                 if (pos != 0 || len != 0) {
-                    int begin = currWindow.length() - pos;
+                    int begin = decompressed.length() - pos;
                     for (int j = 0; j < len; j++) {
-                        currWindow += currWindow.charAt(begin);
+                        decompressed += decompressed.charAt(begin);
                         begin++;
                     }
                 }
                 if(!next.equals("null"))
-                    currWindow += next;
+                    decompressed += next;
             }
         }
-        return currWindow;
-    }
-
-    public boolean readFile(char option, String file){
-        Path filePath = Paths.get(file);
-        String output;
-        try {
-            String input = Files.readString(filePath);
-            if(option == 'd') {
-                output = decompress(input);
-                writeToFile('d', output);
-            }
-            else{
-                output = compress(input);
-                writeToFile('c', output);
-            }
-            return true;
-        }
-        catch (IOException ex) {
-            return false;
-        }
-    }
-
-    public void writeToFile(char option, String output) throws IOException {
-        String newFile;
-        String file = rwFiles.file.substring(rwFiles.file.lastIndexOf('\\') + 1);
-        if (option == 'd') {
-            newFile = file.replace("compressed", "decompressed");
-        }
-        else {
-            newFile = file.substring(0,file.lastIndexOf('.')) + "_compressed.txt";
-        }
-        Path filePath = Paths.get(newFile);
-        Files.writeString(filePath, output, StandardCharsets.UTF_8);
+        fileHandler.setFileContent(decompressed);
     }
 }
