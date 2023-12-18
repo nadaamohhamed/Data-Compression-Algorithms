@@ -10,7 +10,7 @@ import java.util.Vector;
 public class VectorQuantization extends CompressionTechniqueHandler {
     public int vectorHeight = 2;
     public int vectorWidth = 2;
-    public int codeBookSize = 64;
+    public int codeBookSize = 63;
     public int scaledHeight = 0;
     public int scaledWidth = 0;
 
@@ -23,7 +23,7 @@ public class VectorQuantization extends CompressionTechniqueHandler {
         Vector<int[][][]> blocks = new Vector<>();
         for (int i = 0; i < scaledHeight; i+= vectorHeight) {
             for (int j = 0; j < scaledWidth; j+= vectorWidth) {
-                blocks.add(new int[vectorHeight][vectorWidth][4]);
+                blocks.add(new int[vectorHeight][vectorWidth][3]);
                 for (int x = i, a = 0; x < i + vectorHeight; x++, a++) {
                     for (int y = j, b = 0; y < j + vectorWidth; y++, b++) {
                         blocks.lastElement()[a][b] = scaledImg[x][y];
@@ -38,21 +38,22 @@ public class VectorQuantization extends CompressionTechniqueHandler {
         int height = vectors.get(0).length;
         int width = vectors.get(0)[0].length;
 
-        int[][][] sum = new int[height][width][4];
+        int[][][] sum = new int[height][width][3];
         // calculate average of group of vectors
         for (int[][][] vector : vectors) {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                    for (int k = 0; k < 4; k++) {
+                    for (int k = 0; k < 3; k++) {
                         sum[i][j][k] += vector[i][j][k];
                     }
                 }
             }
         }
-        int[][][] avg = new int[height][width][4];
+        // divide the sum by the number of vectors
+        int[][][] avg = new int[height][width][3];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                for (int k = 0; k < 4; k++) {
+                for (int k = 0; k < 3; k++) {
                     avg[i][j][k] = sum[i][j][k] / vectors.size();
                 }
             }
@@ -61,22 +62,21 @@ public class VectorQuantization extends CompressionTechniqueHandler {
     }
     public Vector<int[][][]> splitAverage(int[][][] average){
         Vector<int[][][]> returnVec = new Vector<>();
-
         int height = average.length;
         int width = average[0].length;
-
-        int[][][] average1 = new int[height][width][4];
-        int[][][] average2 = new int[height][width][4];
-
+        // add 1 to the first vector and subtract 1 from the second vector
+        int[][][] average1 = new int[height][width][3];
+        int[][][] average2 = new int[height][width][3];
+        // split the average into 2 vectors
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                for(int k = 0 ; k < 4 ; k++){
+                for(int k = 0 ; k < 3 ; k++){
                     average1[i][j][k] = average[i][j][k] + 1;
                     average2[i][j][k] = average[i][j][k] - 1;
                 }
             }
         }
-
+        // add the 2 vectors to the return vector
         returnVec.add(average1);
         returnVec.add(average2);
 
@@ -154,7 +154,7 @@ public class VectorQuantization extends CompressionTechniqueHandler {
         scaledWidth = width % vectorWidth == 0? width : ((width / vectorWidth) + 1) * vectorWidth;
 
         // copy last pixel if the scaled height or width was less than original height, width
-        int[][][] scaledImage = new int[scaledHeight][scaledWidth][4];
+        int[][][] scaledImage = new int[scaledHeight][scaledWidth][3];
 
         for (int i = 0; i < scaledHeight; i++) {
             if(i >= height)
@@ -208,7 +208,7 @@ public class VectorQuantization extends CompressionTechniqueHandler {
             Vector<int[][][]> quantized = (Vector<int[][][]>) input.readObject();
 
             // construct the decompressed image
-            int[][][] newImg = new int[scaledHeight][scaledWidth][4];
+            int[][][] newImg = new int[scaledHeight][scaledWidth][3];
 
             for (int i = 0; i < indices.size(); i++) {
                 int x = i / (scaledWidth / vectorWidth) * vectorHeight;
@@ -216,7 +216,7 @@ public class VectorQuantization extends CompressionTechniqueHandler {
                 int[][][] arr = quantized.get(indices.get(i));
                 for (int j = x, a = 0; j < x + vectorHeight; j++, a++) {
                     for (int k = y, b = 0; k < y + vectorWidth; k++, b++) {
-                        for (int z = 0; z < 4; z++) {
+                        for (int z = 0; z < 3; z++) {
                             newImg[j][k][z] = arr[a][b][z];
                         }
                     }

@@ -27,7 +27,7 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
     public void quantize(int[][][] differences, int[][] indices, int[][][] quantizedDiff){
         // Uniform Quantization
         Vector<Vector<Level>> table = new Vector<>();
-        for(int k = 0 ; k < 4 ; k++){
+        for(int k = 0 ; k < 3 ; k++){
             // get min and max;
             Map.Entry<Integer, Integer> maxAndMin = getMaxAndMin(differences, k);
             int maxDiff = maxAndMin.getKey();
@@ -56,16 +56,18 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
         // loop on differences and get its Q value (quantized differences)
         for (int i = 1; i < height; i++) {
             for (int j = 1; j < width; j++) {
-                for (int k = 0; k < 4; k++){
+                for (int k = 0; k < 3; k++){
                     for(Level l : table.get(k)){
                         if(differences[i][j][k] >= l.start && differences[i][j][k] <= l.end)
+                            // quantize the difference
                             quantizedDiff[i][j][k] = l.Q;
                     }
                 }
 
             }
         }
-        for(int k = 0 ; k < 4 ; k++){
+        // set each for each Q value its Q-1 value (Quantization table)
+        for(int k = 0 ; k < 3 ; k++){
             for(Level l : table.get(k)){
                 indices[l.Q][k] = l.Q_1;
             }
@@ -78,27 +80,28 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
         // height, width
         height = imageHandler.height;
         width = imageHandler.width;
-        // store first row and col in a vec
-        int[][][] firstRow = getFirstRow(image);
-        int[][][] firstCol = getFirstCol(image);
-        // predict image
-        int[][][] prediction = new int[height][width][4];
+        int[][][] prediction = new int[height][width][3];
         // store first row and col
-        setFirstRow(prediction, firstRow);
-        setFirstCol(prediction, firstCol);
+        setFirstRow(prediction, image);
+        setFirstCol(prediction, image);
         predict(prediction);
         // get diff between original image and prediction
         int[][][] diff = calculateDifference(image, prediction);
-        // quantize
-        int[][] indices = new int[numOfLevels][4];
-        int[][][] quantized = new int[height][width][4];
-        quantize(diff, indices, quantized);
-        // write image data (indices) and overhead (quantized, first col, first row)
-        writeData(firstRow, firstCol, indices, quantized, file);
+        // quantize using uniform quantization
+        int[][] indices = new int[numOfLevels][3];
+        int[][][] quantizedDiff = new int[height][width][3];
+        // set first row and col for quantized diff
+        setFirstRow(quantizedDiff, image);
+        setFirstCol(quantizedDiff, image);
+        // quantize and get quantization table
+        quantize(diff, indices, quantizedDiff);
+        // write the image overhead (indices, quantized diff)
+        writeData(indices, quantizedDiff, file);
         // decompress to output compressed img
         decompress(getCompressedPath(file));
     }
     private Map.Entry<Integer,Integer> getMaxAndMin(int[][][] image , int dimension) {
+        // get the max and min of the image in the given dimension
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
         for (int i = 1; i < image.length; i++) {
@@ -118,8 +121,6 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
              ObjectInput input = new ObjectInputStream(buffer)) {
 
             // read from file
-            int[][][] firstRow = (int[][][]) input.readObject();
-            int[][][] firstCol = (int[][][])  input.readObject();
             int[][] indices = (int[][]) input.readObject();
             int[][][] quantizedDiff = (int[][][]) input.readObject();
 
@@ -128,65 +129,49 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
             int width = quantizedDiff[0].length;
 
             // construct the decompressed image
-            int[][][] newImg = new int[height][width][4];
-            setFirstRow(newImg, firstRow);
-            setFirstCol(newImg, firstCol);
+            int[][][] decodedImg = new int[height][width][3];
+            setFirstRow(decodedImg, quantizedDiff);
+            setFirstCol(decodedImg, quantizedDiff);
             // predict
-            int[][][] prediction = new int[height][width][4];
-            setFirstRow(prediction, firstRow);
-            setFirstCol(prediction, firstCol);
+            int[][][] prediction = new int[height][width][3];
+            setFirstRow(prediction, quantizedDiff);
+            setFirstCol(prediction, quantizedDiff);
             predict(prediction);
 
             for(int i = 1;i < height; i++){
                 for(int j = 1; j < width; j++){
-                    for (int k = 0; k < 4; k++){
-                        newImg[i][j][k] =  prediction[i][j][k] + indices[quantizedDiff[i][j][k]][k];
-                        if(newImg[i][j][k] < 0)
-                            newImg[i][j][k] = 0;
-                        else if(newImg[i][j][k] > 255)
-                            newImg[i][j][k] = 255;
+                    for (int k = 0; k < 3; k++){
+                        // decoded img = prediction + de-quantized diff
+                        decodedImg[i][j][k] =  prediction[i][j][k] + indices[quantizedDiff[i][j][k]][k];
+                        // check if out of range
+                        if(decodedImg[i][j][k] < 0)
+                            decodedImg[i][j][k] = 0;
+                        else if(decodedImg[i][j][k] > 255)
+                            decodedImg[i][j][k] = 255;
                     }
                 }
             }
 
             // write image
-            imageHandler.writeImageRGB(newImg, width, height, getDecompressedPath(fileName));
+            imageHandler.writeImageRGB(decodedImg, width, height, getDecompressedPath(fileName));
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
-    int[][][] getFirstRow(int[][][] image){
-        int[][][] firstRow = new int[1][width][4];
+    void setFirstRow(int[][][] image, int[][][] originalImage){
         for(int i = 0;i < width; i++){
-            firstRow[0][i] = image[0][i];
+            image[0][i] = originalImage[0][i];
         }
-        return firstRow;
     }
-    int[][][] getFirstCol(int[][][] image){
-        int[][][]  firstCol = new int[height][1][4];
+    void setFirstCol(int[][][] image, int[][][] originalImage){
         for(int i = 0;i < height; i++){
-            firstCol[i][0] = image[i][0];
-        }
-        return firstCol;
-    }
-    void setFirstRow(int[][][] image, int[][][] firstRow){
-        for(int i = 0;i < width; i++){
-            image[0][i] = firstRow[0][i];
+            image[i][0] = originalImage[i][0];
         }
     }
-    void setFirstCol(int[][][] image, int[][][] firstCol){
-        for(int i = 0;i < height; i++){
-            image[i][0] = firstCol[i][0];
-        }
-    }
-    public void writeData(int[][][] firstRow, int[][][] firstCol, int[][] indices,
-                          int[][][] quantizedDiff, String file){
+    public void writeData(int[][] indices, int[][][] quantizedDiff, String file){
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(getCompressedPath(file));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             // write to compressed File
-            objectOutputStream.writeObject(firstRow);
-            objectOutputStream.writeObject(firstCol);
             objectOutputStream.writeObject(indices);
             objectOutputStream.writeObject(quantizedDiff);
             objectOutputStream.close();
@@ -196,11 +181,12 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
     }
     int[][][] calculateDifference(int[][][] image, int[][][] prediction){
         // calc for each row and col start from index 1
-        int[][][] differences = new int[height][width][4];
+        int[][][] differences = new int[height][width][3];
         for (int i = 1; i < height; i++) {
             for (int j = 1; j < width; j++) {
-                for (int k = 0; k < 4; k++) {
-                    differences[i][j][k] += image[i][j][k] - prediction[i][j][k];
+                for (int k = 0; k < 3; k++) {
+                    // diff = original - prediction
+                    differences[i][j][k] = image[i][j][k] - prediction[i][j][k];
                 }
             }
         }
@@ -217,12 +203,12 @@ public class PredictiveCoding2D extends CompressionTechniqueHandler {
     void predict(int[][][] predict){
         for (int i = 1; i < height; i++) {
             for (int j = 1; j < width; j++) {
-                for (int k = 0; k < 4; k++) {
+                for (int k = 0; k < 3; k++) {
+                    // get A, B, C and predict using adaptive 2D predictor
                     int A = predict[i][j-1][k];
                     int C = predict[i-1][j][k];
                     int B = predict[i-1][j-1][k];
-                    int predicted = adaptive2DPredictor(A, B, C);
-                    predict[i][j][k] = predicted;
+                    predict[i][j][k] = adaptive2DPredictor(A, B, C);
                 }
             }
         }

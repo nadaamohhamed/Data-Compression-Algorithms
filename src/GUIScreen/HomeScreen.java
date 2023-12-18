@@ -42,40 +42,40 @@ public class HomeScreen extends JFrame {
         compressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(fileName.equals("")){
+                if(fileHandler.filePath.equals("")){
                     JOptionPane.showMessageDialog(null, "Error, please choose a file.", "Invalid Compression",
                             JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     try {
                         fileHandler.compressFile();
+                        comboBox.setSelectedItem(null);
+                        fileName.setText("(No file chosen)");
+                        algoName.setText("(No algorithm chosen)");
+                        currTechnique = null;
                     }
                    catch (IOException | ClassNotFoundException ex) {
                    }
-                    comboBox.setSelectedItem(null);
-                    fileName.setText("(No file chosen)");
-                    algoName.setText("(No algorithm chosen)");
-                    currTechnique = null;
                 }
             }
         });
         decompressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(fileName.equals("")){
+                if(fileHandler.filePath.equals("")){
                     JOptionPane.showMessageDialog(null, "Error, please choose a file.", "Invalid Decompression",
                             JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     try {
                         fileHandler.decompressFile();
+                        comboBox.setSelectedItem(null);
+                        fileName.setText("(No file chosen)");
+                        algoName.setText("(No algorithm chosen)");
+                        currTechnique = null;
                     }
                     catch (IOException | ClassNotFoundException ex) {
                     }
-                    comboBox.setSelectedItem(null);
-                    fileName.setText("(No file chosen)");
-                    algoName.setText("(No algorithm chosen)");
-                    currTechnique = null;
                 }
             }
         });
@@ -94,7 +94,7 @@ public class HomeScreen extends JFrame {
                         new PredictiveScreen();
                         setVisible(false);
                     }
-                    case "L77" -> {
+                    case "LZ77" -> {
                         currTechnique = new LZ77(fileHandler);
                         fileHandler.setTechnique(currTechnique);
                     }

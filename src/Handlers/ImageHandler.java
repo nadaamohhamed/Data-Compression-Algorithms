@@ -17,18 +17,16 @@ public class ImageHandler {
             img = ImageIO.read(new File(path));
             height = img.getHeight();
             width = img.getWidth();
-            int[][][] pixels = new int[height][width][4];
+            int[][][] pixels = new int[height][width][3];
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     int pixel = img.getRGB(j, i);
                     int red = (pixel & 0x00ff0000) >> 16;
                     int green = (pixel & 0x0000ff00) >> 8;
-                    int alpha = (pixel & 0xff000000) >> 24;
                     int blue = pixel & 0x000000ff;
                     pixels[i][j][0] = red;
                     pixels[i][j][1] = green;
                     pixels[i][j][2] = blue;
-                    pixels[i][j][3] = alpha;
                 }
             }
             return pixels;
@@ -46,8 +44,7 @@ public class ImageHandler {
                 int red = pixels[i][j][0];
                 int green = pixels[i][j][1];
                 int blue = pixels[i][j][2];
-                int alpha = pixels[i][j][3];
-                int rgb = (alpha << 24) | (red << 16) | (green << 8) | blue ;
+                int rgb = (red << 16) | (green << 8) | blue ;
                 image.setRGB(j, i, rgb);
             }
         }

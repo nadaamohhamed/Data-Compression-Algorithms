@@ -102,10 +102,10 @@ public class VectorQuantizationScreen extends JFrame{
                         changeImgButton.setEnabled(false);
                     } catch (IOException e1) {
                     }
+                    decompressButton.setEnabled(false);
                 }
 
                 compressButton.setEnabled(true);
-                decompressButton.setEnabled(false);
             }
         });
         compressButton.addActionListener(new ActionListener() {
@@ -187,11 +187,11 @@ public class VectorQuantizationScreen extends JFrame{
                     File f = fileChooser.getSelectedFile();
                     imageHandler.imageFile = f.getAbsolutePath();
                     decompressFile = fileChooser.getSelectedFile();
-                    filePathCompress.setText(decompressFile.getAbsolutePath());
-                    filePathDecompress.setText("");
+                    filePathDecompress.setText(decompressFile.getAbsolutePath());
+                    filePathCompress.setText("");
+                    compressButton.setEnabled(false);
                 }
                 decompressButton.setEnabled(true);
-                compressButton.setEnabled(false);
             }
         });
     }
