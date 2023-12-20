@@ -10,7 +10,7 @@ import java.util.Vector;
 public class VectorQuantization extends CompressionTechniqueHandler {
     public int vectorHeight = 2;
     public int vectorWidth = 2;
-    public int codeBookSize = 63;
+    public int codeBookSize = 64;
     public int scaledHeight = 0;
     public int scaledWidth = 0;
 

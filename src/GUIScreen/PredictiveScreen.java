@@ -109,6 +109,9 @@ public class PredictiveScreen extends JFrame {
                     filePathDecompress.setText("");
                     try {
                         Image = ImageIO.read(new File(compressFile.getAbsolutePath()));
+                        image.setIcon(new ImageIcon(Image));
+                        image.setHorizontalAlignment(JLabel.CENTER);
+                        imageScreen.getViewport().add(image);
                         switchImage(false);
                         changeImgButton.setEnabled(false);
                     } catch (IOException e1) {
@@ -197,6 +200,8 @@ public class PredictiveScreen extends JFrame {
                     filePathDecompress.setText(decompressFile.getAbsolutePath());
                     filePathCompress.setText("");
                     compressButton.setEnabled(false);
+                    changeImgButton.setEnabled(false);
+                    image.setIcon(null);
                 }
                 decompressButton.setEnabled(true);
             }
